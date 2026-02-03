@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Absensi 312 Hari Mobile Friendly</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 768px) {
+  body { padding: 1rem; }
+  h4, h5 { font-size: 1.2rem; }
+  .table th, .table td { font-size: 0.85rem; padding: 0.3rem; }
+  button { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
+}
+input[type=checkbox] { transform: scale(1.2); margin: 0.2rem; }
+button { margin-bottom: 0.2rem; }
+.card { cursor:pointer; min-width:150px; }
+/* Border tabel ungu lebih tebal */
+.table-bordered, 
+.table-bordered th, 
+.table-bordered td {
+  border: 2px solid purple !important; /* Ubah warna border menjadi ungu dan lebih tebal */
+}
+
+/* Optional: header lebih menonjol */
+.table thead th {
+  background-color: #f3e5f5; /* latar belakang ungu muda */
+  color: #4a148c; /* teks ungu gelap */
+  font-weight: bold;
+}
+/* ===== TABEL ===== */
+.table-responsive { 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
+}
+
+.table-bordered {
+  border: 1.5px solid purple; /* garis tabel ungu elegan */
+  border-radius: 6px; /* sudut sedikit melengkung */
+}
+
+.table-bordered th, 
+.table-bordered td {
+  border: 1.5px solid purple; /* border antar sel */
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.4rem; /* padding lebih konsisten */
+}
+
+.table thead th {
+  background-color: #f3e5f5; /* ungu muda */
+  color: #4a148c; /* ungu gelap */
+  font-weight: bold;
+}
+
+.table-bordered tbody tr:hover {
+  background-color: #fce4ec; /* highlight saat hover */
+}
+
+/* ===== CARD ===== */
+.card {
+  cursor: pointer;
+  min-width: 160px;
+  max-width: 160px; /* semua card sama ukuran */
+  text-align: center;
+  margin: 0.3rem;
+  border: 1.5px solid #9c27b0; /* border ungu */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.card h6 {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #4a148c;
+}
+
+.card button {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  margin-top: 0.3rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  body { padding: 1rem; }
+  h4, h5 { font-size: 1.2rem; }
+  .table th, .table td { font-size: 0.85rem; padding: 0.3rem; }
+  button { font-size: 0.75rem; padding: 0.2rem 0.4rem; }
+  .card { min-width: 140px; max-width: 140px; }
+}
+
+/* ===== CHECKBOX ===== */
+input[type=checkbox] { 
+  transform: scale(1.2); 
+  margin: 0.2rem; 
+}
+
+button { margin-bottom: 0.2rem; }
+
+</style>
+</head>
+<body>
+<div class="container">
+<h4 class="mb-3">𝐓𝐚𝐛𝐞𝐥 𝐋𝐚𝐩𝐨𝐫𝐚𝐧 𝐁𝐚𝐜𝐚 𝐀𝐥𝐤𝐢𝐭𝐚𝐛 𝐒𝐞𝐥𝐚𝐦𝐚 𝟑𝟏𝟐 𝐇𝐚𝐫𝐢</h4>
+<div class="table-responsive">
+<table class="table table-bordered text-center">
+<thead></thead>
+<tbody id="tabelAbsensi"></tbody>
+</table>
+</div>
+<hr>
+<h5>𝐃𝐚𝐭𝐚 𝐊𝐌𝐀 𝟑𝟏𝟐 𝐇𝐚𝐫𝐢 (𝐊𝐥𝐢𝐤 𝐍𝐚𝐦𝐚 𝐔𝐧𝐭𝐮𝐤 𝐋𝐢𝐡𝐚𝐭 𝐋𝐚𝐩𝐨𝐫𝐚𝐧 𝐩𝐞𝐫 𝐦𝐢𝐧𝐠𝐠𝐮))</h5>
+<div id="listMinggu" class="d-flex flex-wrap"></div>
+
+<!-- MODAL LAPORAN -->
+<div class="modal fade" id="modalLaporan">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">𝐋𝐚𝐩𝐨𝐫𝐚𝐧 𝐌𝐢𝐧𝐠𝐠𝐮𝐚𝐧</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>𝐍𝐨</th>
+              <th>𝐌𝐢𝐧𝐠𝐠𝐮</th>
+              <th>𝐓𝐚𝐧𝐠𝐠𝐚𝐥 𝐋𝐚𝐩𝐨𝐫𝐚𝐧</th>
+            </tr>
+          </thead>
+          <tbody id="isiModal"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCMW7INvJsMg67GQm0GrE1BpkZAvQkhOS8",
+  authDomain: "savekma312hari.firebaseapp.com",
+  databaseURL: "https://savekma312hari-default-rtdb.firebaseio.com",
+  projectId: "savekma312hari",
+  storageBucket: "savekma312hari.firebasestorage.app",
+  messagingSenderId: "167003010790",
+  appId: "1:167003010790:web:bdfed5d9192c3b30cbad27"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ===== DATA =====
+const namaList = ["Andi", "Budi", "Citra","Elisyanti","Fitry K","Ida Farida","Alexia","Anastasia Coyang",
+"Aprilia","Brigita Tiga","Cristina Suminah","Christine TW","Cinda","Divi","Dodi KKurniawan","Enjelika","Emilia Landa","Fatmawati",
+"Efremia Herlina Femi","Audrey","Haleria Biati","Honda.S","Regmum","Heri","Ignasius Andros","Anastasia Mukat","Belasius","Jeni Jieng",
+"Jeqlin","Jessica","Leni Kumala","Maria Aprilinda","Maria Hirtonia","Meriandani","Merry","Nando Castanyo","Rateri Ylianingsih","RIna",
+"Sr. In Alma","Suhadi Kusno","Sukamoi","Yani Irianita","Yohana Hesti","Yokimson","Yosafat","Youla Kairupan","Yuliana Mangan","Yustina",
+"Natalia","Bernadeta Sri","Rossa Bhedsy","Kristina"];
+const tabel = document.getElementById("tabelAbsensi");
+
+// ===== 312 HARI =====
+const startDate = new Date("2025-09-01");
+const tanggalList = [];
+const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+for(let i=0;i<312;i++){
+  const d = new Date(startDate);
+  d.setDate(startDate.getDate()+i);
+  tanggalList.push({day:d.getDate(),month:monthNames[d.getMonth()],fullDate:d.toISOString().slice(0,10)});
+}
+
+// ===== HEADER TABEL =====
+let headerRow1 = `<tr><th>No</th><th>Nama</th><th colspan="${tanggalList.length}">Tanggal</th><th>Aksi</th></tr>`;
+let headerRow2 = `<tr><th></th><th></th>`;
+tanggalList.forEach(t=>{ headerRow2 += `<th>${t.day}<br>${t.month}</th>`; });
+headerRow2 += `<th></th></tr>`;
+document.querySelector("table thead").innerHTML = headerRow1 + headerRow2;
+
+// ===== BODY TABEL =====
+namaList.forEach((nama,i)=>{
+  let row = `<tr><td>${i+1}</td><td>${nama}</td>`;
+  tanggalList.forEach(t=>{ row += `<td><input type="checkbox" data-nama="${nama}" data-fulldate="${t.fullDate}"></td>`; });
+  row += `<td class="aksi" data-nama="${nama}"><span class="text-muted">Belum ada</span></td></tr>`;
+  tabel.innerHTML += row;
+});
+
+// ===== MODAL INPUT AYAT =====
+const modalAyatHTML = `
+<div class="modal fade" id="modalAyat">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ayat Emas</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="inputAyat" class="form-control" placeholder="Masukkan ayat emas" disabled>
+        <div class="mt-2 d-flex justify-content-between">
+          <button class="btn btn-secondary" id="editAyatBtn">Edit</button>
+          <button class="btn btn-primary" id="simpanAyatBtn" disabled>Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+document.body.insertAdjacentHTML('beforeend', modalAyatHTML);
+const modalAyat = new bootstrap.Modal(document.getElementById('modalAyat'));
+let currentCheckbox = null;
+
+// ===== CHECKBOX CLICK =====
+document.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+  cb.addEventListener("click", ()=>{
+    currentCheckbox = cb;
+    const nama = cb.dataset.nama;
+    const date = cb.dataset.fulldate;
+    db.ref(`laporan/${date}/${nama}/ayat`).once("value", snap=>{
+      document.getElementById("inputAyat").value = snap.val() || "";
+      modalAyat.show();
+    });
+  });
+});
+
+// ===== SIMPAN AYAT =====
+document.getElementById("simpanAyatBtn").addEventListener("click", ()=>{
+  if(!currentCheckbox) return;
+  const nama = currentCheckbox.dataset.nama;
+  const date = currentCheckbox.dataset.fulldate;
+  const ayat = document.getElementById("inputAyat").value;
+  db.ref(`laporan/${date}/${nama}`).set({ hadir:true, ayat })
+  .then(()=>{
+    currentCheckbox.checked = true;
+    const td = document.querySelector(`.aksi[data-nama="${nama}"]`);
+    td.innerHTML = `<button class="btn btn-sm btn-primary" onclick="openModalNama('${nama}')">𝐋𝐢𝐡𝐚𝐭</button>`;
+    modalAyat.hide();
+    tampilkanKartuNama();
+  });
+});
+
+// ===== LOAD DATA TERAKHIR =====
+function loadCheckboxTerakhir(){
+  db.ref("laporan").once("value",snap=>{
+    const data = snap.val();
+    if(!data) return;
+    document.querySelectorAll("input[type=checkbox]").forEach(cb=>{
+      const nama = cb.dataset.nama;
+      const date = cb.dataset.fulldate;
+      if(data[date] && data[date][nama] && data[date][nama].hadir){
+        cb.checked = true;
+        const td = document.querySelector(`.aksi[data-nama="${nama}"]`);
+        td.innerHTML = `<button class="btn btn-sm btn-primary" onclick="openModalNama('${nama}')">𝐋𝐢𝐡𝐚𝐭</button>`;
+      }
+    });
+  });
+}
+
+// ===== TAMPILKAN CARD (NAMA SAJA) =====
+function tampilkanKartuNama(){
+  const list = document.getElementById("listMinggu");
+  list.innerHTML = "";
+  namaList.forEach(nama=>{
+    list.innerHTML += `
+    <div class="card m-1 p-2">
+      <div class="card-body text-center">
+        <h6 onclick="openModalNama('${nama}')">${nama}</h6>
+        <button class="btn btn-sm btn-danger mt-2" onclick="hapusNama('${nama}')">Hapus Semua</button>
+      </div>
+    </div>
+    `;
+  });
+}
+
+// ===== MODAL LAPORAN MINGGUAN =====
+function openModalNama(nama){
+  const modal = new bootstrap.Modal(document.getElementById("modalLaporan"));
+  const isi = document.getElementById("isiModal");
+  isi.innerHTML = "";
+  db.ref("laporan").once("value", snap => {
+    const data = snap.val();
+    const mingguList = [];
+    for(let i=0; i<312; i+=7){
+      mingguList.push(tanggalList.slice(i,i+7));
+    }
+    mingguList.forEach((minggu,index)=>{
+      let hadirTanggal = [];
+      minggu.forEach(t=>{
+        if(data[t.fullDate] && data[t.fullDate][nama] && data[t.fullDate][nama].hadir){
+          const link = `<a href="#" onclick="editAyat('${t.fullDate}','${nama}')">${t.day} ${t.month}</a>`;
+          hadirTanggal.push(link);
+        }
+      });
+      isi.innerHTML += `<tr><td>${index+1}</td><td>Minggu ke ${index+1}</td><td>${hadirTanggal.join(", ") || "-"}</td></tr>`;
+    });
+  });
+  modal.show();
+}
+
+// ===== HAPUS DATA =====
+function hapusNama(nama){
+  if(confirm(`Yakin hapus semua data absensi ${nama}?`)){
+    db.ref("laporan").once("value", snap=>{
+      const data = snap.val();
+      if(!data) return;
+      Object.keys(data).forEach(tgl=>{
+        if(data[tgl] && data[tgl][nama] !== undefined){
+          db.ref(`laporan/${tgl}/${nama}`).remove();
+        }
+      });
+      alert(`Data absensi ${nama} berhasil dihapus`);
+      loadCheckboxTerakhir();
+      tampilkanKartuNama();
+    });
+  }
+}
+
+// ===== INITIALIZE =====
+tampilkanKartuNama();
+loadCheckboxTerakhir();
+const inputAyat = document.getElementById("inputAyat");
+const editAyatBtn = document.getElementById("editAyatBtn");
+const simpanAyatBtn = document.getElementById("simpanAyatBtn");
+
+// Tombol edit mengaktifkan input
+editAyatBtn.addEventListener("click", () => {
+  inputAyat.disabled = false;
+  simpanAyatBtn.disabled = false;
+  inputAyat.focus();
+});
+function editAyat(date, nama){
+  db.ref(`laporan/${date}/${nama}/ayat`).once("value", snap => {
+    const ayat = snap.val() || "";
+    inputAyat.value = ayat;
+    currentCheckbox = document.querySelector(`input[data-nama="${nama}"][data-fulldate="${date}"]`);
+    modalAyat.show();
+    inputAyat.disabled = false;
+    simpanAyatBtn.disabled = false;
+    inputAyat.focus();
+  });
+}
+
+</script>
+</body>
+</html>

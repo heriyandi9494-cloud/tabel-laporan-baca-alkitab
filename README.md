@@ -1,1 +1,0 @@
-# tabel-laporan-baca-alkitab
