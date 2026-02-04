@@ -7,6 +7,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
+/* ===== TABEL ===== */
 .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 @media (max-width: 768px) {
   body { padding: 1rem; }
@@ -118,7 +119,7 @@ button { margin-bottom: 0.2rem; }
 </table>
 </div>
 <hr>
-<h5>𝐃𝐚𝐭𝐚 𝐊𝐌𝐀 𝟑𝟏𝟐 𝐇𝐚𝐫𝐢 (𝐊𝐥𝐢𝐤 𝐍𝐚𝐦𝐚 𝐔𝐧𝐭𝐮𝐤 𝐋𝐢𝐡𝐚𝐭 𝐋𝐚𝐩𝐨𝐫𝐚𝐧 𝐩𝐞𝐫 𝐦𝐢𝐧𝐠𝐠𝐮))</h5>
+<h5>𝐃𝐚𝐭𝐚 𝐊𝐌𝐀 𝟑𝟏𝟐 𝐇𝐚𝐫𝐢 (𝐊𝐥𝐢𝐤 𝐍𝐚𝐦𝐚 𝐔𝐧𝐭𝐮𝐤 𝐋𝐢𝐡𝐚𝐭 𝐋𝐚𝐩𝐨𝐫𝐚𝐧 𝐩𝐞𝐫 𝐦𝐢𝐧𝐠𝐠𝐮)</h5>
 <div id="listMinggu" class="d-flex flex-wrap"></div>
 
 <!-- MODAL LAPORAN -->
@@ -163,13 +164,60 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 // ===== DATA =====
-const namaList = ["Elisyanti", "Fitry K", "Ida Farida","Alexia","Anastasia Coyang","Aprilia","Brigita Nila",
-"Christina Suminah","Christine TW","Cinda","Divi","Dodi Kurniawan","Enjelika","Emiliana Landa","Fatmawati","Efremia Herlina Femi","Audrey",
-"Haleria Biati","Henda S","Regnum","Heri","Ignasius Andros","Anastasia Mukat","Belasius","Jeni Jiang","Jeqlin","Jessica",
-"Lani Kumala","Maria Aprilinda","Maria Nurtania","Meriandini","Merry","Nando Castanyo","Ratri Yulianingsih","Rina","Sr. In, ALMA","Suhadi Kusno",
-"Sukamoi","Yani Irianita","Yohana Hesti","Yokinson","Yosafat","Youla Kairupan","Yuliana Mangan","Yustina",
-"Natalia","Bernadeta Sri","Rossa Bhedsy","Kristina"];
-const tabel = document.getElementById("tabelAbsensi");
+const fotoMap = {
+  "Elisyanti": "https://i.postimg.cc/SKgfWTRW/Screenshot-1.jpg",
+  "Fitry K": "https://i.postimg.cc/g076zfnb/Screenshot-2.jpg",
+  "Ida Farida": "https://i.postimg.cc/NG6LSy7w/Screenshot-3.jpg",
+  "Alexia": "https://i.postimg.cc/cLpSdh0b/Screenshot-4.jpg",
+  "Anastasia Coyang": "https://i.postimg.cc/zXy63hd2/Screenshot-5.jpg",
+  "Aprilia": "https://i.postimg.cc/SKdDgQT8/Screenshot-6.jpg",
+  "Brigita Nila": "https://i.postimg.cc/Nj4zzxL1/Screenshot-7.jpg",
+  "Christina Suminah": "https://i.postimg.cc/RFrK1k9Q/Screenshot-8.jpg",
+  "Christine TW": "https://i.postimg.cc/5Njy0PWH/Screenshot-9.jpg",
+  "Cinda": "https://i.postimg.cc/L6ZSwGMh/Screenshot-10.jpg",
+  "Divi": "https://i.postimg.cc/htBGrK7S/Screenshot-11.jpg",
+  "Dodi Kurniawan": "https://i.postimg.cc/j2ybwJc4/Screenshot-12.jpg",
+  "Enjelika": "https://i.postimg.cc/J0LFFY3s/Screenshot-13.jpg",
+  "Emiliana Landa": "https://i.postimg.cc/sgXNbhW0/Screenshot-14.jpg",
+  "Fatmawati": "https://i.postimg.cc/8z9t3nNw/Screenshot-15.jpg",
+  "Efremia Herlina Femi": "https://i.postimg.cc/9QRBGtZ7/Screenshot-16.jpg",
+  "Audrey": "https://i.postimg.cc/kX94NnSX/Screenshot-17.jpg",
+  "Haleria Biati": "https://i.postimg.cc/P57T7hC8/Screenshot-18.jpg",
+  "Henda S": "https://i.postimg.cc/YSgKyFcZ/Screenshot-19.jpg",
+  "Regnum": "https://i.postimg.cc/sXcLt9TK/Screenshot-20.jpg",
+  "Heri": "https://i.postimg.cc/5NcPnr9Q/Screenshot-21.jpg",
+  "Ignasius Andros": "https://i.postimg.cc/Bn7Hw85M/Screenshot-22.jpg",
+  "Anastasia Mukat": "https://i.postimg.cc/QdzKJ2sb/Screenshot-23.jpg",
+  "Belasius": "https://i.postimg.cc/fRn6SLSC/Screenshot-24.jpg",
+  "Jeni Jiang": "https://i.postimg.cc/ydjLx64P/Screenshot-26.jpg",
+  "Jeqlin": "https://i.postimg.cc/BQXmZGhp/Screenshot-27.jpg",
+  "Jessica": "https://i.postimg.cc/YS36fXnx/Screenshot-28.jpg",
+  "Lani Kumala": "https://i.postimg.cc/4xGw6h4Z/Screenshot-29.jpg",
+  "Maria Aprilinda": "https://i.postimg.cc/k54QsQ0P/Screenshot-30.jpg",
+  "Maria Nurtania": "https://i.postimg.cc/X7k901W2/Screenshot-31.jpg",
+  "Meriandini": "https://i.postimg.cc/rsLRBxPy/Screenshot-32.jpg",
+  "Merry": "https://i.postimg.cc/QtcHJVdh/Screenshot-33.jpg",
+  "Nando Castanyo": "https://i.postimg.cc/Gm9tSXm9/Screenshot-34.jpg",
+  "Ratri Yulianingsih": "https://i.postimg.cc/sXPgZ8wm/Screenshot-35.jpg",
+  "Rina": "https://i.postimg.cc/bNwwsmb0/Screenshot-36.jpg",
+  "Sr. In, ALMA": "https://i.postimg.cc/mD4bRjBV/Screenshot-37.jpg",
+  "Suhadi Kusno": "https://i.postimg.cc/rpnvZ9zz/Screenshot-38.jpg",
+  "Sukamoi": "https://i.postimg.cc/wTQ4bkGs/Screenshot-39.jpg",
+  "Yani Irianita": "https://i.postimg.cc/ZRP6Kw34/Screenshot-41.jpg",
+  "Yohana Hesti": "https://i.postimg.cc/7Zpz3Fn8/Screenshot-42.jpg",
+  "Yokinson": "https://i.postimg.cc/Fsh82DJn/yokin.jpg",
+  "Yosafat": "https://i.postimg.cc/1X5VRsyQ/Screenshot-43.jpg",
+  "Youla Kairupan": "https://i.postimg.cc/FKyYj7Kp/Screenshot-44.jpg",
+  "Yuliana Mangan": "https://i.postimg.cc/CMPzHyw6/Screenshot-45.jpg",
+  "Yustina": "https://i.postimg.cc/hPQPLfyp/Screenshot-46.jpg",
+  "Natalia": "https://i.postimg.cc/ydN7kd3L/Screenshot-47.jpg",
+  "Bernadeta Sri": "https://i.postimg.cc/wjdHDFsd/Screenshot-48.jpg",
+  "Rossa Bhedsy": "https://i.postimg.cc/gkbkKGCW/Screenshot-49.jpg",
+  "Kristina": "https://i.postimg.cc/jj2sj27M/Screenshot-50.jpg",
+};
+
+// ===== DEFINE NAMA LIST =====
+const namaList = Object.keys(fotoMap); // Menentukan nama berdasarkan fotoMap
 
 // ===== 312 HARI =====
 const startDate = new Date("2025-09-01");
@@ -189,6 +237,7 @@ headerRow2 += `<th></th></tr>`;
 document.querySelector("table thead").innerHTML = headerRow1 + headerRow2;
 
 // ===== BODY TABEL =====
+const tabel = document.getElementById("tabelAbsensi");
 namaList.forEach((nama,i)=>{
   let row = `<tr><td>${i+1}</td><td>${nama}</td>`;
   tanggalList.forEach(t=>{ row += `<td><input type="checkbox" data-nama="${nama}" data-fulldate="${t.fullDate}"></td>`; });
@@ -206,9 +255,9 @@ const modalAyatHTML = `
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <textarea id="inputAyat"  class="form-control"rows="3"  style="resize:vertical"></textarea>
+        <textarea id="inputAyat" class="form-control" rows="3" style="resize:vertical"></textarea>
         <div class="mt-2 d-flex justify-content-between">
-          <button class="btn btn-secondary" id="editAyatBtn">Edit</button>
+          <button class="btn btn-warning" id="adminBtn">🔒 Admin</button>
           <button class="btn btn-primary" id="simpanAyatBtn" disabled>Simpan</button>
         </div>
       </div>
@@ -217,6 +266,12 @@ const modalAyatHTML = `
 </div>
 `;
 document.body.insertAdjacentHTML('beforeend', modalAyatHTML);
+const ADMIN_PIN = "312KMA"; // GANTI SESUAI KEINGINAN
+let adminUnlocked = false;
+document.getElementById("inputAyat").readOnly = true;
+document.getElementById("simpanAyatBtn").disabled = true;
+adminUnlocked = false;
+
 const modalAyat = new bootstrap.Modal(document.getElementById('modalAyat'));
 let currentCheckbox = null;
 
@@ -226,8 +281,25 @@ document.querySelectorAll("input[type=checkbox]").forEach(cb=>{
     currentCheckbox = cb;
     const nama = cb.dataset.nama;
     const date = cb.dataset.fulldate;
-    db.ref(`laporan/${date}/${nama}/ayat`).once("value", snap=>{
-      document.getElementById("inputAyat").value = snap.val() || "";
+
+    db.ref(`laporan/${date}/${nama}`).once("value", snap=>{
+      const data = snap.val();
+
+      // RESET MODE
+      adminUnlocked = false;
+      document.getElementById("inputAyat").readOnly = false;
+      document.getElementById("simpanAyatBtn").disabled = false;
+
+      if(data && data.hadir){
+        // 🔒 DATA SUDAH ADA → TERKUNCI
+        document.getElementById("inputAyat").value = data.ayat || "";
+        document.getElementById("inputAyat").readOnly = true;
+        document.getElementById("simpanAyatBtn").disabled = true;
+      } else {
+        // ✅ DATA BARU → PESERTA BOLEH ISI
+        document.getElementById("inputAyat").value = "";
+      }
+
       modalAyat.show();
     });
   });
@@ -236,18 +308,33 @@ document.querySelectorAll("input[type=checkbox]").forEach(cb=>{
 // ===== SIMPAN AYAT =====
 document.getElementById("simpanAyatBtn").addEventListener("click", ()=>{
   if(!currentCheckbox) return;
+
   const nama = currentCheckbox.dataset.nama;
   const date = currentCheckbox.dataset.fulldate;
   const ayat = document.getElementById("inputAyat").value;
-  db.ref(`laporan/${date}/${nama}`).set({ hadir:true, ayat })
-  .then(()=>{
-    currentCheckbox.checked = true;
-    const td = document.querySelector(`.aksi[data-nama="${nama}"]`);
-    td.innerHTML = `<button class="btn btn-sm btn-primary" onclick="openModalNama('${nama}')">𝐋𝐢𝐡𝐚𝐭</button>`;
-    modalAyat.hide();
-    tampilkanKartuNama();
+
+  db.ref(`laporan/${date}/${nama}`).once("value", snap=>{
+    const data = snap.val();
+
+    // ❌ DATA SUDAH ADA & BUKAN ADMIN
+    if(data && data.hadir && !adminUnlocked){
+      alert("Ayat sudah disimpan dan tidak dapat diubah ❌");
+      return;
+    }
+
+    // ✅ SIMPAN DATA
+    db.ref(`laporan/${date}/${nama}`).set({
+      hadir: true,
+      ayat: ayat
+    }).then(()=>{
+      currentCheckbox.checked = true;
+      modalAyat.hide();
+      tampilkanKartuNama();
+      loadCheckboxTerakhir();
+    });
   });
 });
+
 
 // ===== LOAD DATA TERAKHIR =====
 function loadCheckboxTerakhir(){
@@ -270,14 +357,19 @@ function loadCheckboxTerakhir(){
 function tampilkanKartuNama(){
   const list = document.getElementById("listMinggu");
   list.innerHTML = "";
+
   namaList.forEach(nama=>{
+    const foto = fotoMap[nama] || "https://i.imgur.com/default.jpg";
     list.innerHTML += `
-    <div class="card m-1 p-2">
-      <div class="card-body text-center">
-        <h6 onclick="openModalNama('${nama}')">${nama}</h6>
-        <button class="btn btn-sm btn-danger mt-2" onclick="hapusNama('${nama}')">Hapus Semua</button>
+      <div class="card" onclick="openModalNama('${nama}')">
+        <img src="${foto}"
+             class="card-img-top"
+             loading="lazy"
+             style="height:120px; object-fit:cover;">
+        <div class="card-body p-2">
+          <h6>${nama}</h6>
+        </div>
       </div>
-    </div>
     `;
   });
 }
@@ -295,16 +387,33 @@ function openModalNama(nama){
     }
     mingguList.forEach((minggu,index)=>{
       let hadirTanggal = [];
-      minggu.forEach(t=>{
-        if(data[t.fullDate] && data[t.fullDate][nama] && data[t.fullDate][nama].hadir){
-          const link = `<a href="#" onclick="editAyat('${t.fullDate}','${nama}')">${t.day} ${t.month}</a>`;
-          hadirTanggal.push(link);
+      minggu.forEach(t=> {
+        if (data[t.fullDate] && data[t.fullDate][nama] && data[t.fullDate][nama].hadir) {
+          hadirTanggal.push(`<a href="javascript:void(0)" onclick="editAyat('${t.fullDate}','${nama}')">${t.day} ${t.month}</a>`);
         }
       });
       isi.innerHTML += `<tr><td>${index+1}</td><td>Minggu ke ${index+1}</td><td>${hadirTanggal.join(", ") || "-"}</td></tr>`;
     });
   });
   modal.show();
+}
+// ===== EDIT AYAT DARI LAPORAN MINGGUAN =====
+function editAyat(fullDate, nama){
+  currentCheckbox = {
+    dataset: {
+      nama: nama,
+      fulldate: fullDate
+    }
+  };
+
+  db.ref(`laporan/${fullDate}/${nama}/ayat`).once("value", snap=>{
+    document.getElementById("inputAyat").value = snap.val() || "";
+
+    // aktifkan tombol simpan
+    document.getElementById("simpanAyatBtn").disabled = false;
+
+    modalAyat.show();
+  });
 }
 
 // ===== HAPUS DATA =====
@@ -328,27 +437,18 @@ function hapusNama(nama){
 // ===== INITIALIZE =====
 tampilkanKartuNama();
 loadCheckboxTerakhir();
-const inputAyat = document.getElementById("inputAyat");
-const editAyatBtn = document.getElementById("editAyatBtn");
-const simpanAyatBtn = document.getElementById("simpanAyatBtn");
+document.getElementById("adminBtn").addEventListener("click", ()=>{
+  const pin = prompt("Masukkan PIN Admin:");
 
-// Tombol edit mengaktifkan input
-editAyatBtn.addEventListener("click", () => {
-  inputAyat.disabled = false;
-  simpanAyatBtn.disabled = false;
-  inputAyat.focus();
+  if(pin === ADMIN_PIN){
+    adminUnlocked = true;
+    document.getElementById("inputAyat").readOnly = false;
+    document.getElementById("simpanAyatBtn").disabled = false;
+    alert("Mode Admin Aktif ✅");
+  } else {
+    alert("PIN salah ❌");
+  }
 });
-function editAyat(date, nama){
-  db.ref(`laporan/${date}/${nama}/ayat`).once("value", snap => {
-    const ayat = snap.val() || "";
-    inputAyat.value = ayat;
-    currentCheckbox = document.querySelector(`input[data-nama="${nama}"][data-fulldate="${date}"]`);
-    modalAyat.show();
-    inputAyat.disabled = false;
-    simpanAyatBtn.disabled = false;
-    inputAyat.focus();
-  });
-}
 
 </script>
 </body>
